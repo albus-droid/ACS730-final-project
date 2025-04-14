@@ -123,7 +123,7 @@ resource "aws_launch_template" "webserver_lt" {
   name_prefix            = "${var.environment}-webserver-"
   image_id               = "ami-00a929b66ed6e0de6" # Update with a valid AMI ID
   instance_type          = "t2.micro"
-  key_name               = "your-keypair" # Update with your EC2 key pair
+  key_name               = "vockey" # Update with your EC2 key pair
   vpc_security_group_ids = [aws_security_group.web_sg.id]
 
   user_data = base64encode(<<EOF
@@ -189,7 +189,7 @@ module "ec2_extra" {
       instance_type               = "t2.micro"
       ami                         = "ami-00a929b66ed6e0de6" # Update with the proper AMI ID
       subnet_id                   = module.vpc.public_subnet_ids[1]
-      key_name                    = "your-keypair"
+      key_name                    = "vockey"
       security_group_ids          = [aws_security_group.bastion_sg.id]
       associate_public_ip_address = true
       user_data                   = ""
@@ -200,7 +200,7 @@ module "ec2_extra" {
       instance_type               = "t2.micro"
       ami                         = "ami-00a929b66ed6e0de6"
       subnet_id                   = module.vpc.public_subnet_ids[3]
-      key_name                    = "your-keypair"
+      key_name                    = "vockey"
       security_group_ids          = [aws_security_group.web_sg.id]
       associate_public_ip_address = true
       user_data                   = <<-EOF
@@ -218,7 +218,7 @@ EOF
       instance_type               = "t2.micro"
       ami                         = "ami-00a929b66ed6e0de6"
       subnet_id                   = module.vpc.private_subnet_ids[0]
-      key_name                    = "your-keypair"
+      key_name                    = "vockey"
       security_group_ids          = [aws_security_group.web_sg.id]
       associate_public_ip_address = false
       user_data                   = <<-EOF
@@ -236,7 +236,7 @@ EOF
       instance_type               = "t2.micro"
       ami                         = "ami-00a929b66ed6e0de6"
       subnet_id                   = module.vpc.private_subnet_ids[1]
-      key_name                    = "your-keypair"
+      key_name                    = "vockey"
       security_group_ids          = [aws_security_group.web_sg.id]
       associate_public_ip_address = false
       user_data                   = <<-EOF
