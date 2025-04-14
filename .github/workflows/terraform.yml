@@ -40,8 +40,9 @@ jobs:
         run: |
           tflint --init
           tflint
-
+          
       - name: Terraform Init & Plan
         run: |
+          cd staging
           terraform init
           terraform plan
