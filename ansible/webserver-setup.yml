@@ -30,7 +30,7 @@
         content: |
           <html>
             <head>
-              <title>GroupX Webserver</title>
+              <title>Webserver</title>
             </head>
             <body>
               <h1>Hello from {{ inventory_hostname }}</h1>
