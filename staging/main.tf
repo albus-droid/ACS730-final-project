@@ -7,8 +7,8 @@ provider "aws" {
 # -----------------------------------------------------
 module "vpc" {
   source   = "../modules/vpc"
-  vpc_cidr = "10.0.0.0/16"
-  vpc_name = "GroupX-Dev-VPC"
+  vpc_cidr = "10.1.0.0/16"
+  vpc_name = "Staging-VPC"
   # Four public subnets and two private subnets
   public_subnet_cidrs  = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24", "10.0.4.0/24"]
   private_subnet_cidrs = ["10.0.101.0/24", "10.0.102.0/24"]
@@ -16,8 +16,8 @@ module "vpc" {
   azs         = ["us-east-1a", "us-east-1b", "us-east-1c", "us-east-1d"]
   environment = var.environment
   tags = {
-    Project = "GroupX-Final-Project"
-    Owner   = "YourTeamName"
+    Project = "Final-Project"
+    Owner   = "Albin"
   }
 }
 
@@ -179,8 +179,8 @@ module "ec2_extra" {
   source      = "../modules/ec2"
   environment = var.environment
   tags = {
-    Project = "GroupX-Final-Project"
-    Owner   = "YourTeamName"
+    Project = "Final-Project"
+    Owner   = "Albin"
   }
   instances = [
     # Bastion Host in Public Subnet 2 (Webserver 2 - not a webserver)
@@ -257,14 +257,14 @@ EOF
 module "alb" {
   source = "../modules/alb"
 
-  name                       = "GroupX-ALB"
+  name                       = "ALB"
   subnet_ids                 = module.vpc.public_subnet_ids
   security_group_ids         = [aws_security_group.alb_sg.id]
   idle_timeout               = 60
   enable_deletion_protection = false
   tags = {
-    Project = "GroupX-Final-Project"
-    Owner   = "YourTeamName"
+    Project = "Final-Project"
+    Owner   = "Albin"
   }
 
   vpc_id                           = module.vpc.vpc_id
