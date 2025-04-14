@@ -1,0 +1,62 @@
+name: Terraform CI
+
+on:
+  push:
+    branches:
+      - dev
+      - staging
+  pull_request:
+    branches:
+      - prod
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+    env:
+      # These environment variables will be picked up by any AWS CLI or SDK calls.
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
+      AWS_REGION: us-east-1
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v2
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+          aws-region: us-east-1
+
+      - name: Determine Environment Directory
+        id: getenv
+        run: |
+          # For pull_request events, github.head_ref is available.
+          if [ -n "${{ github.head_ref }}" ]; then
+            echo "Using head_ref as environment: ${{ github.head_ref }}"
+            echo "environment=${{ github.head_ref }}" >> $GITHUB_OUTPUT
+          else
+            echo "Using ref_name as environment: ${{ github.ref_name }}"
+            echo "environment=${{ github.ref_name }}" >> $GITHUB_OUTPUT
+          fi
+
+
+      # (Optional) Install TFLint, Terraform etc.
+      - name: Install TFLint
+        run: |
+          curl -sSLO https://raw.githubusercontent.com/terraform-linters/tflint/master/install_linux.sh
+          chmod +x install_linux.sh
+          sudo ./install_linux.sh
+
+      # Change directory to the appropriate environment folder and run Terraform.
+      - name: Terraform Init, Validate & Plan
+        run: |
+          echo "Changing to environment directory: ${{ steps.getenv.outputs.environment }}"
+          cd "${{ steps.getenv.outputs.environment }}"
+          terraform init
+          terraform validate
+          terraform plan
