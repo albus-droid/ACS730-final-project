@@ -121,7 +121,7 @@ resource "aws_security_group" "bastion_sg" {
 # Create a Launch Template for the ASG-managed webservers.
 resource "aws_launch_template" "webserver_lt" {
   name_prefix            = "${var.environment}-webserver-"
-  image_id               = "ami-05f417c208be02d4d" # Update with a valid AMI ID
+  image_id               = "ami-00a929b66ed6e0de6" # Update with a valid AMI ID
   instance_type          = "t2.micro"
   key_name               = "your-keypair" # Update with your EC2 key pair
   vpc_security_group_ids = [aws_security_group.web_sg.id]
@@ -187,7 +187,7 @@ module "ec2_extra" {
     {
       name                        = "BastionHost"
       instance_type               = "t2.micro"
-      ami                         = "ami-05f417c208be02d4d" # Update with the proper AMI ID
+      ami                         = "ami-00a929b66ed6e0de6" # Update with the proper AMI ID
       subnet_id                   = module.vpc.public_subnet_ids[1]
       key_name                    = "your-keypair"
       security_group_ids          = [aws_security_group.bastion_sg.id]
@@ -198,7 +198,7 @@ module "ec2_extra" {
     {
       name                        = "Webserver_Public"
       instance_type               = "t2.micro"
-      ami                         = "ami-05f417c208be02d4d"
+      ami                         = "ami-00a929b66ed6e0de6"
       subnet_id                   = module.vpc.public_subnet_ids[3]
       key_name                    = "your-keypair"
       security_group_ids          = [aws_security_group.web_sg.id]
@@ -216,7 +216,7 @@ EOF
     {
       name                        = "Webserver_Private_1"
       instance_type               = "t2.micro"
-      ami                         = "ami-05f417c208be02d4d"
+      ami                         = "ami-00a929b66ed6e0de6"
       subnet_id                   = module.vpc.private_subnet_ids[0]
       key_name                    = "your-keypair"
       security_group_ids          = [aws_security_group.web_sg.id]
@@ -234,7 +234,7 @@ EOF
     {
       name                        = "Webserver_Private_2"
       instance_type               = "t2.micro"
-      ami                         = "ami-05f417c208be02d4d"
+      ami                         = "ami-00a929b66ed6e0de6"
       subnet_id                   = module.vpc.private_subnet_ids[1]
       key_name                    = "your-keypair"
       security_group_ids          = [aws_security_group.web_sg.id]
