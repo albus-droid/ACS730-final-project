@@ -1,6 +1,5 @@
----
 - name: Configure Webservers to serve a static webpage with an S3 image
-  hosts: webservers
+  hosts: all
   become: yes
   tasks:
 
