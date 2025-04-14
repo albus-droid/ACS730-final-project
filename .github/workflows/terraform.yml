@@ -2,10 +2,12 @@ name: Terraform CI
 
 on:
   push:
-    branches: [ "dev", "staging" ]
+    branches:
+      - dev
+      - staging
   pull_request:
-    branches: [ "prod" ]
-
+    branches:
+      - prod
 jobs:
   terraform:
     runs-on: ubuntu-latest
@@ -30,19 +32,30 @@ jobs:
           aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
           aws-region: us-east-1
 
+      - name: Determine Environment Directory
+        id: getenv
+        run: |
+          # For pull_request events, github.head_ref is available.
+          if [ -n "${{ github.head_ref }}" ]; then
+            echo "Using head_ref as environment: ${{ github.head_ref }}"
+            echo "environment=${{ github.head_ref }}" >> $GITHUB_OUTPUT
+          else
+            echo "Using ref_name as environment: ${{ github.ref_name }}"
+            echo "environment=${{ github.ref_name }}" >> $GITHUB_OUTPUT
+          fi
+
+
+      # (Optional) Install TFLint, Terraform etc.
       - name: Install TFLint
         run: |
           curl -sSLO https://raw.githubusercontent.com/terraform-linters/tflint/master/install_linux.sh
           chmod +x install_linux.sh
           sudo ./install_linux.sh
 
-      - name: Run TFLint
-        run: |
-          tflint --init
-          tflint
-          
+      # Change directory to the appropriate environment folder and run Terraform.
       - name: Terraform Init & Plan
         run: |
-          cd staging
+          echo "Changing to environment directory: ${{ steps.getenv.outputs.environment }}"
+          cd "${{ steps.getenv.outputs.environment }}"
           terraform init
           terraform plan
