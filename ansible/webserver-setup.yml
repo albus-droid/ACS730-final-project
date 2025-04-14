@@ -1,0 +1,53 @@
+---
+- name: Configure Webservers
+  hosts: all
+  become: yes
+  tasks:
+    - name: Ping the host to verify connectivity
+      ping:
+
+    - name: Install Apache (httpd)
+      yum:
+        name: httpd
+        state: present
+
+    - name: Start and enable the httpd service
+      service:
+        name: httpd
+        state: started
+        enabled: yes
+
+    # Optional: Ensure AWS CLI is installed (if needed)
+    - name: Install AWS CLI
+      yum:
+        name: aws-cli
+        state: present
+      when: ansible_distribution == "Amazon"
+
+    - name: Download image from S3
+      command: aws s3 cp s3://acs730-final-project-041401332025/bliss.jpeg /var/www/html/bliss.jpeg
+      args:
+        creates: /var/www/html/bliss.jpeg
+      # The "creates" argument ensures the task only runs if the file isn't already present
+
+    - name: Create or update index.html to include the S3 image
+      copy:
+        dest: /var/www/html/index.html
+        content: |
+          <html>
+            <head>
+              <title>GroupX Webserver</title>
+            </head>
+            <body>
+              <h1>Hello from {{ inventory_hostname }}</h1>
+              <img src="bliss.jpeg" alt="Bliss Image" />
+            </body>
+          </html>
+      notify:
+        - Restart httpd
+
+  handlers:
+    - name: Restart httpd
+      service:
+        name: httpd
+        state: restarted
