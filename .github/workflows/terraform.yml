@@ -53,9 +53,10 @@ jobs:
           sudo ./install_linux.sh
 
       # Change directory to the appropriate environment folder and run Terraform.
-      - name: Terraform Init & Plan
+      - name: Terraform Init, Validate & Plan
         run: |
           echo "Changing to environment directory: ${{ steps.getenv.outputs.environment }}"
           cd "${{ steps.getenv.outputs.environment }}"
           terraform init
+          terraform validate
           terraform plan
