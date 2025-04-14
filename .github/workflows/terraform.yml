@@ -7,6 +7,7 @@ on:
   pull_request:
     branches:
       - "*"
+
 jobs:
   terraform:
     runs-on: ubuntu-latest
@@ -43,15 +44,12 @@ jobs:
             echo "environment=${{ github.ref_name }}" >> $GITHUB_OUTPUT
           fi
 
-
-      # (Optional) Install TFLint, Terraform etc.
       - name: Install TFLint
         run: |
           curl -sSLO https://raw.githubusercontent.com/terraform-linters/tflint/master/install_linux.sh
           chmod +x install_linux.sh
           sudo ./install_linux.sh
 
-      # Change directory to the appropriate environment folder and run Terraform.
       - name: Terraform Init, Validate & Plan
         run: |
           echo "Changing to environment directory: ${{ steps.getenv.outputs.environment }}"
@@ -59,3 +57,30 @@ jobs:
           terraform init
           terraform validate
           terraform plan
+
+  ansible:
+    name: Run Ansible Playbooks
+    runs-on: ubuntu-latest
+    needs: terraform
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Setup SSH Private Key
+        run: |
+          mkdir -p $HOME/.ssh
+          echo "${{ secrets.SSH_KEY }}" > $HOME/.ssh/id_rsa
+          chmod 600 $HOME/.ssh/id_rsa
+
+      - name: Install Ansible
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ansible
+
+      - name: Display Ansible Version
+        run: ansible --version
+
+      - name: Run Webserver Setup Playbook
+        run: |
+          cd ansible
+          ansible-playbook -i aws_ec2.yaml webserver-setup.yml --private-key $HOME/.ssh/id_rsa -u ec2-user
