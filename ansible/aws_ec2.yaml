@@ -2,7 +2,7 @@ plugin: aws_ec2
 regions:
     - us-east-1
 filters:
-    "tag:Environment": "staging"
+    "tag:Environment": "prod"
       # Optionally, if you want only webservers (if you have a tag "Role=Webserver")
       #   # "tag:Role": "Webserver"
 keyed_groups:
