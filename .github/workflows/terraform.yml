@@ -58,6 +58,7 @@ jobs:
           terraform validate
           terraform plan
 
+
   ansible:
     name: Run Ansible Playbooks
     runs-on: ubuntu-latest
@@ -66,10 +67,13 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v2
 
+      - name: Install Python Dependencies for Dynamic Inventory
+        run: pip install boto3 botocore
+
       - name: Setup SSH Private Key
         run: |
           mkdir -p $HOME/.ssh
-          echo "${{ secrets.SSH_KEY }}" > $HOME/.ssh/id_rsa
+          echo "${{ secrets.ANSIBLE_SSH_KEY }}" > $HOME/.ssh/id_rsa
           chmod 600 $HOME/.ssh/id_rsa
 
       - name: Install Ansible
@@ -77,10 +81,11 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y ansible
 
-      - name: Display Ansible Version
-        run: ansible --version
+      - name: Run Ansible Inventory Test
+        run: ansible-inventory --list -i ansible/aws_ec2.yaml
 
       - name: Run Webserver Setup Playbook
         run: |
           cd ansible
-          ansible-playbook -i aws_ec2.yaml webserver-setup.yml --private-key $HOME/.ssh/id_rsa -u ec2-user
+          # Use --private-key pointing to the SSH key and specify -u ec2-user (or appropriate user)
+          ansible-playbook -i aws_ec2.yaml playbooks/webserver-setup.yml --private-key $HOME/.ssh/id_rsa -u ec2-user
