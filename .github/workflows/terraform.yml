@@ -35,14 +35,8 @@ jobs:
       - name: Determine Environment Directory
         id: getenv
         run: |
-          # For pull_request events, github.head_ref is available.
-          if [ -n "${{ github.head_ref }}" ]; then
-            echo "Using head_ref as environment: ${{ github.head_ref }}"
-            echo "environment=${{ github.head_ref }}" >> $GITHUB_OUTPUT
-          else
-            echo "Using ref_name as environment: ${{ github.ref_name }}"
-            echo "environment=${{ github.ref_name }}" >> $GITHUB_OUTPUT
-          fi
+          branch="${GITHUB_REF#refs/heads/}"
+          echo "environment=$branch" >> $GITHUB_OUTPUT
 
       - name: Install TFLint
         run: |
