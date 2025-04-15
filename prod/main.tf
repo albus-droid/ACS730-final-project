@@ -8,7 +8,7 @@ provider "aws" {
 module "vpc" {
   source   = "../modules/vpc"
   vpc_cidr = "10.1.0.0/16"
-  vpc_name = "Prod-VPC"
+  vpc_name = "Staging-VPC"
   # Four public subnets and two private subnets
   public_subnet_cidrs  = ["10.1.1.0/24", "10.1.2.0/24", "10.1.3.0/24", "10.1.4.0/24"]
   private_subnet_cidrs = ["10.1.5.0/24", "10.1.6.0/24"]
@@ -98,6 +98,14 @@ resource "aws_security_group" "bastion_sg" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"] # Replace YOUR_PUBLIC_IP with your actual public IP
+  }
+
+  ingress {
+    description = "Allow HTTP access from your IP"
+    from_port   = 80
+    to_port     = 80
+    protocol    = "http"
     cidr_blocks = ["0.0.0.0/0"] # Replace YOUR_PUBLIC_IP with your actual public IP
   }
 
@@ -192,7 +200,14 @@ module "ec2_extra" {
       key_name                    = "vockey"
       security_group_ids          = [aws_security_group.bastion_sg.id]
       associate_public_ip_address = true
-      user_data                   = ""
+      user_data                   = <<-EOF
+#!/bin/bash
+yum update -y
+yum install -y httpd
+systemctl start httpd
+systemctl enable httpd
+echo "Hello from Bastion Host" > /var/www/html/index.html
+EOF
     },
     # Additional Public Webserver in Public Subnet 4 (Webserver 4)
     {
@@ -280,4 +295,12 @@ module "alb" {
 
   listener_port     = 80
   listener_protocol = "HTTP"
+}
+
+resource "aws_lb_target_group_attachment" "ec2_extra_attachments" {
+  for_each = module.ec2_extra.instance_ids
+
+  target_group_arn = module.alb.target_group_arn
+  target_id        = each.value   # Instance ID
+  port             = 80           # Replace with your target port, if different
 }
