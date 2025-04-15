@@ -296,3 +296,11 @@ module "alb" {
   listener_port     = 80
   listener_protocol = "HTTP"
 }
+
+resource "aws_lb_target_group_attachment" "ec2_extra_attachments" {
+  for_each = module.ec2.instance_ids
+
+  target_group_arn = module.alb.target_group_arn
+  target_id        = each.value   # Instance ID
+  port             = 80           # Replace with your target port, if different
+}
