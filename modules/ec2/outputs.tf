@@ -1,5 +1,5 @@
 output "instance_ids" {
-  description = "IDs of the created EC2 instances."
+  description = "Map of instance IDs keyed by instance names."
   value       = { for key, inst in aws_instance.this : key => inst.id }
 }
 
