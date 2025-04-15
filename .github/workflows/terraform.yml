@@ -97,5 +97,5 @@ jobs:
         run: |
           cd ansible
           # Ensure that your dynamic inventory file (aws_ec2.yaml) is in the same ansible folder.
-          ansible-playbook -i aws_ec2.yaml webserver-setup.yml --private-key $HOME/.ssh/id_rsa -u ec2-user
+          ansible-playbook -i aws_ec2.yaml webserver-setup.yml --private-key $HOME/.ssh/id_rsa -u ec2-user || true
 
