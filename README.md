@@ -84,7 +84,7 @@ The GitHub Actions workflow performs the following:
 - `AWS_ACCESS_KEY_ID`
 - `AWS_SECRET_ACCESS_KEY`
 - `AWS_SESSION_TOKEN` (if required)
-- `ANSIBLE_SSH_KEY`
+- `SSH_KEY`
 
 ---
 
