@@ -1,13 +1,10 @@
 plugin: aws_ec2
 regions:
-    - us-east-1
+  - us-east-1
 filters:
-    "tag:Environment": "prod"
-      # Optionally, if you want only webservers (if you have a tag "Role=Webserver")
-      #   # "tag:Role": "Webserver"
+  tag:Environment: prod
 keyed_groups:
-    - key: tags.Name
-      prefix: ""
+  - key: tags.Name
+    prefix: ""
 compose:
-      ansible_host: public_ip_address
-      
+  ansible_host: public_ip_address
