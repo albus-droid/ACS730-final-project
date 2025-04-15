@@ -21,8 +21,8 @@
 
     - name: Download bliss.jpeg from S3 using get_url
       get_url:
-        url: "https://acs730-final-project-041401332025.s3.us-east-1.amazonaws.com/bliss.jpeg"
-        dest: /var/www/html/bliss.jpeg
+        url: "https://acs730-final-project-041401332025.s3.us-east-1.amazonaws.com/bliss.jpg"
+        dest: /var/www/html/bliss.jpg
         mode: "0644"
       # This task fetches the image from S3 (which must be publicly accessible)
 
@@ -36,7 +36,7 @@
             </head>
             <body>
               <h1>Hello from {{ inventory_hostname }}</h1>
-              <img src="bliss.jpeg" alt="Bliss Image" />
+              <img src="bliss.jpg" alt="Bliss Image" />
             </body>
           </html>
       notify:
