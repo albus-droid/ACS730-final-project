@@ -101,6 +101,14 @@ resource "aws_security_group" "bastion_sg" {
     cidr_blocks = ["0.0.0.0/0"] # Replace YOUR_PUBLIC_IP with your actual public IP
   }
 
+  ingress {
+    description = "Allow HTTP access from your IP"
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"] # Replace YOUR_PUBLIC_IP with your actual public IP
+  }
+
   egress {
     description = "Allow all outbound traffic"
     from_port   = 0
@@ -192,7 +200,14 @@ module "ec2_extra" {
       key_name                    = "vockey"
       security_group_ids          = [aws_security_group.bastion_sg.id]
       associate_public_ip_address = true
-      user_data                   = ""
+      user_data                   = <<-EOF
+#!/bin/bash
+yum update -y
+yum install -y httpd
+systemctl start httpd
+systemctl enable httpd
+echo "Hello from Bastion Host" > /var/www/html/index.html
+EOF
     },
     # Additional Public Webserver in Public Subnet 4 (Webserver 4)
     {
@@ -280,4 +295,12 @@ module "alb" {
 
   listener_port     = 80
   listener_protocol = "HTTP"
+}
+
+resource "aws_lb_target_group_attachment" "ec2_extra_attachments" {
+  for_each = module.ec2_extra.instance_ids
+
+  target_group_arn = module.alb.target_group_arn
+  target_id        = each.value   # Instance ID
+  port             = 80           # Replace with your target port, if different
 }
