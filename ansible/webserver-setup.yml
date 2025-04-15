@@ -6,6 +6,7 @@
     - name: Check connectivity to each host
       ping:
       ignore_errors: yes
+      failed_when: false
 
     - name: Ensure Apache (httpd) is installed
       yum:
