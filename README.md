@@ -121,7 +121,7 @@ terraform destroy
 
 ## Contributors
 
-- [Albin Babu Varghese](@albus-droid)
+- [Albin Babu Varghese](https://github.com/albus-droid)
 ---
 
 ## License
