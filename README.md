@@ -98,15 +98,6 @@ The architecture includes:
 
 ---
 
-## Troubleshooting
-
-### Common Issues
-- **Inventory Issues**: Ensure your AWS credentials have EC2 read permissions.
-- **Ansible Connection Issues**: Verify SSH key permissions (`chmod 600 your-ssh-key.pem`).
-- **Terraform State Issues**: Always use remote state (S3 backend).
-
----
-
 ## Cleanup
 
 To avoid unnecessary AWS charges, clean up your environment after use:
@@ -114,8 +105,6 @@ To avoid unnecessary AWS charges, clean up your environment after use:
 ```bash
 terraform destroy
 ```
-
-*(Always double-check resources manually through AWS Console.)*
 
 ---
 
